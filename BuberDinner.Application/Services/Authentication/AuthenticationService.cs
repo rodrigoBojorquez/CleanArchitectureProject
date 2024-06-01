@@ -1,6 +1,8 @@
+using BuberDinner.Application.Common.Errors;
 using BuberDinner.Application.Common.Interfaces.Authentication;
 using BuberDinner.Application.Common.Interfaces.Persistence;
 using BuberDinner.Domain.Entities;
+using OneOf;
 
 namespace BuberDinner.Application.Services.Authentication;
 
@@ -38,7 +40,7 @@ public class AuthenticationService : IAuthenticationService
         return new AutenticationResult(user, token);
     }
 
-    public AutenticationResult Register(string firstName, string lastName, string email, string password)
+    public OneOf<AutenticationResult, DuplicatedEmailError> Register(string firstName, string lastName, string email, string password)
     {
         /* 
             1.- Verificar que el usuario no exista en la base de datos
@@ -48,7 +50,7 @@ public class AuthenticationService : IAuthenticationService
 
         if (_userRepository.GetUserByEmail(email) is not null)
         {
-            throw new Exception("User already exists");
+            return new DuplicatedEmailError();
         }
 
         var user = new User
