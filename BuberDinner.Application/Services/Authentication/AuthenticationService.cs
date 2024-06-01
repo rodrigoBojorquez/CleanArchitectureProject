@@ -25,17 +25,17 @@ public class AuthenticationService : IAuthenticationService
 
         if (_userRepository.GetUserByEmail(email) is not User user)
         {
-            throw new Exception("User with given email does not exists");
+            throw new Exception("Invalid credentials");
         }
 
         if (user.Password != password)
         {
-            throw new Exception("Invalid password");
+            throw new Exception("Invalid credentials");
         }
 
-        var token = _jwtTokenGenerator.GenerateToken(user.Id, user.FirstName!, user.LastName!);
+        var token = _jwtTokenGenerator.GenerateToken(user);
 
-        return new AutenticationResult(Guid.NewGuid(), user.FirstName, user.LastName, email, token);
+        return new AutenticationResult(user, token);
     }
 
     public AutenticationResult Register(string firstName, string lastName, string email, string password)
@@ -61,8 +61,8 @@ public class AuthenticationService : IAuthenticationService
 
         _userRepository.CreateUser(user);
 
-        var token = _jwtTokenGenerator.GenerateToken(user.Id, firstName, lastName);
+        var token = _jwtTokenGenerator.GenerateToken(user);
 
-        return new AutenticationResult(user.Id, firstName, lastName, email, token);
+        return new AutenticationResult(user, token);
     }
 }
