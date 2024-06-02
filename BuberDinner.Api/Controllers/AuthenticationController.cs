@@ -20,11 +20,11 @@ public class AuthenticationController : ControllerBase
     [HttpPost("register")]
     public IActionResult Register([FromBody] RegisterRequest request)
     {
-        OneOf<AutenticationResult, DuplicatedEmailError> registerResult = _authenticationService.Register(request.FirstName, request.LastName, request.Email, request.Password);
+        OneOf<AutenticationResult, IError> registerResult = _authenticationService.Register(request.FirstName, request.LastName, request.Email, request.Password);
 
         return registerResult.Match(
             authResult => Ok(MapAuthReponse(authResult)),
-            error => Problem(statusCode: StatusCodes.Status409Conflict, title: "Email already in use")
+            error => Problem(statusCode: (int)error.StatusCode, title: error.ErrorMessage)
         );
     }
 

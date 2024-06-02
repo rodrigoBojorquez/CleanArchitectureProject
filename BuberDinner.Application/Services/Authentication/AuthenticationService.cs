@@ -40,7 +40,7 @@ public class AuthenticationService : IAuthenticationService
         return new AutenticationResult(user, token);
     }
 
-    public OneOf<AutenticationResult, DuplicatedEmailError> Register(string firstName, string lastName, string email, string password)
+    public OneOf<AutenticationResult, IError> Register(string firstName, string lastName, string email, string password)
     {
         /* 
             1.- Verificar que el usuario no exista en la base de datos
