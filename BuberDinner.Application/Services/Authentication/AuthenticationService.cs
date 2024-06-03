@@ -1,7 +1,9 @@
 using BuberDinner.Application.Common.Errors;
 using BuberDinner.Application.Common.Interfaces.Authentication;
 using BuberDinner.Application.Common.Interfaces.Persistence;
+using BuberDinner.Domain.Common.Errors;
 using BuberDinner.Domain.Entities;
+using ErrorOr;
 using OneOf;
 
 namespace BuberDinner.Application.Services.Authentication;
@@ -17,7 +19,7 @@ public class AuthenticationService : IAuthenticationService
         _userRepository = userRepository;
     }
 
-    public AutenticationResult Login(string email, string password)
+    public ErrorOr<AutenticationResult> Login(string email, string password)
     {
         /* 
             1.- Verificar que el usuario exista en la base de datos
@@ -27,12 +29,12 @@ public class AuthenticationService : IAuthenticationService
 
         if (_userRepository.GetUserByEmail(email) is not User user)
         {
-            throw new Exception("Invalid credentials");
+            return Errors.Authentication.InvalidCredentials;
         }
 
         if (user.Password != password)
         {
-            throw new Exception("Invalid credentials");
+            return Errors.Authentication.InvalidCredentials;
         }
 
         var token = _jwtTokenGenerator.GenerateToken(user);
@@ -40,7 +42,7 @@ public class AuthenticationService : IAuthenticationService
         return new AutenticationResult(user, token);
     }
 
-    public OneOf<AutenticationResult, IError> Register(string firstName, string lastName, string email, string password)
+    public ErrorOr<AutenticationResult> Register(string firstName, string lastName, string email, string password)
     {
         /* 
             1.- Verificar que el usuario no exista en la base de datos
@@ -50,7 +52,7 @@ public class AuthenticationService : IAuthenticationService
 
         if (_userRepository.GetUserByEmail(email) is not null)
         {
-            return new DuplicatedEmailError();
+            return Errors.User.DuplicatedEmail;
         }
 
         var user = new User
