@@ -20,8 +20,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Custom error handling
 app.UseExceptionHandler("/error");
+
+app.UseAuthorization();
+app.UseAuthorization();
 app.UseHttpsRedirection();
 app.MapControllers();
-
 app.Run();
