@@ -1,5 +1,6 @@
 using BuberDinner.Api.Common.Http;
 using ErrorOr;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -13,6 +14,7 @@ namespace BuberDinner.Api.Controllers;
 */
 
 [ApiController]
+[Authorize]
 public class ApiController: ControllerBase
 {
     protected IActionResult Problem(List<Error> errors)
@@ -38,6 +40,7 @@ public class ApiController: ControllerBase
         {
             ErrorType.Validation => StatusCodes.Status400BadRequest,
             ErrorType.Conflict => StatusCodes.Status409Conflict,
+            ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,  
             _ => StatusCodes.Status500InternalServerError
         };
 

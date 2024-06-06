@@ -84,6 +84,19 @@ public class BuberDinnerProblemDetailsFactory : ProblemDetailsFactory
         string? instance = null
     )
     {
-        throw new NotImplementedException();
+        statusCode ??= 400;
+
+        var problemDetails = new ValidationProblemDetails(modelStateDictionary)
+        {
+            Status = statusCode,
+            Title = title,
+            Type = type,
+            Detail = detail,
+            Instance = instance
+        };
+
+        ApplyProblemDetailsDefaults(httpContext, problemDetails, statusCode.Value);
+
+        return problemDetails;
     }
 }
